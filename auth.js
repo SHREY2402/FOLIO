@@ -24,6 +24,7 @@ if (configured) {
     ]);
     const app=initializeApp(config);
     const auth=getAuth(app);
+    account.getIdToken=async()=>auth.currentUser?.getIdToken(true)||null;
     const provider=new GoogleAuthProvider();
     provider.setCustomParameters({prompt:'select_account'});
     account.signIn=async()=>{
