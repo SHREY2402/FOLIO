@@ -1,10 +1,33 @@
 {
+  "id": "./",
   "name": "Folio — Scanner & Create Studio",
   "short_name": "Folio",
-  "description": "Private document scanning, pictures, Excel spreadsheets and PDFs.",
-  "start_url": "./index.html",
+  "description": "Scan documents and create images, spreadsheets, and PDFs. Private by design.",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
   "background_color": "#f5fafb",
-  "theme_color": "#0f9db0"
+  "theme_color": "#0f9db0",
+  "orientation": "any",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
