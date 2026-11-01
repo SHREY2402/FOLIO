@@ -1,7 +1,7 @@
 // Folio offline shell. Only caches the public app files, never private documents.
-const CACHE_NAME='folio-shell-v1';
+const CACHE_NAME='folio-shell-v2';
 const ROOT=self.registration.scope;
-const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./firebase-config.js','./auth.js'];
+const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./firebase-config.js','./auth.js','./payment-config.js','./payment.js'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(SHELL.map(path=>new URL(path,ROOT).href))).then(()=>self.skipWaiting()).catch(err=>console.warn('Offline cache unavailable',err)));
 });
