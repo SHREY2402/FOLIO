@@ -241,7 +241,32 @@ async function applyEditor(){try{const c=E('editcanvas'),r=document.createElemen
 function closeEditor(){E('editorModal').classList.remove('show');editorIndex=-1}
 function setupDrag(){const box=E('cropbox');let state=null;box.addEventListener('pointerdown',e=>{const r=E('editcanvas').getBoundingClientRect();state={handle:e.target.dataset.handle||'move',sx:e.clientX,sy:e.clientY,original:{...editorCrop},w:r.width,h:r.height};box.setPointerCapture(e.pointerId);e.preventDefault()});box.addEventListener('pointermove',e=>{if(!state)return;const dx=(e.clientX-state.sx)/state.w,dy=(e.clientY-state.sy)/state.h;const a=state.original;let x=a.x,y=a.y,w=a.w,h=a.h;if(state.handle==='move'){x=Math.min(1-w,Math.max(0,x+dx));y=Math.min(1-h,Math.max(0,y+dy))}else{if(state.handle.includes('l')){x=Math.min(a.x+a.w-.15,Math.max(0,a.x+dx));w=a.w+(a.x-x)}if(state.handle.includes('r')){w=Math.max(.15,Math.min(1-a.x,a.w+dx))}if(state.handle.includes('t')){y=Math.min(a.y+a.h-.15,Math.max(0,a.y+dy));h=a.h+(a.y-y)}if(state.handle.includes('b')){h=Math.max(.15,Math.min(1-a.y,a.h+dy))}}editorCrop={x,y,w,h};layoutCrop()});box.addEventListener('pointerup',()=>state=null);box.addEventListener('pointercancel',()=>state=null);addEventListener('resize',()=>{if(editorIndex>=0)layoutCrop()})}
 async function startup(){E('brandicon').innerHTML=ico('scan',22);E('closeedit').innerHTML=ico('close');E('rotatebtn').innerHTML=ico('rotate')+' Rotate';E('filterbtn').innerHTML=ico('sliders')+' Enhance';E('resetbtn').innerHTML=ico('scan')+' Reset crop';E('applybtn').innerHTML=ico('check')+' Apply';E('cameraInput').addEventListener('change',async e=>{await importImages(e.target.files);e.target.value='' });E('galleryInput').addEventListener('change',async e=>{await importImages(e.target.files);e.target.value='' });E('pdfInput').addEventListener('change',async e=>{await importPdfs(e.target.files);e.target.value='' });E('csvInput').addEventListener('change',async e=>{if(e.target.files[0])await importCSV(e.target.files[0]);e.target.value=''});setupDrag();applyTheme();try{await initStorage();docs=await dbRead();creations=(await creationsRead()).sort((a,b)=>b.createdAt-a.createdAt);E('storageState').textContent='Local storage ready';if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{})}catch(e){E('storageState').textContent='Temporary session only';toast('Local storage blocked; exports recommended')}render();}
+// Offer the native Chrome Android installation prompt when available.
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();deferredInstallPrompt=event;
+  let btn=document.getElementById('folioInstall');
+  if(!btn){
+    btn=document.createElement('button');btn.id='folioInstall';btn.type='button';btn.textContent='↓ Install Folio';
+    Object.assign(btn.style,{position:'fixed',right:'16px',bottom:'92px',zIndex:'99',background:'var(--lav)',color:'#fff',font:'700 13px system-ui',padding:'13px 17px',border:'none',borderRadius:'14px',boxShadow:'0 8px 24px #0003',cursor:'pointer'});
+    document.body.appendChild(btn);
+  }
+  btn.hidden=false;
+  btn.onclick=async()=>{
+    if(!deferredInstallPrompt)return;
+    const prompt=deferredInstallPrompt;deferredInstallPrompt=null;btn.hidden=true;
+    await prompt.prompt();
+    await prompt.userChoice;
+  };
+});
+window.addEventListener('appinstalled',()=>{
+  deferredInstallPrompt=null;
+  const btn=document.getElementById('folioInstall');if(btn)btn.remove();
+});
 startup();
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')) {
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(error=>console.warn('Offline support unavailable',error)));
+}
 </script>
 </body>
 </html>
