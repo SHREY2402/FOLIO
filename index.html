@@ -175,13 +175,13 @@ async function exportDoc(id){const d=docs.find(x=>x.id===id);if(!d)return;toast(
 function renderAccount(){const session=window.FolioAccount||{configured:false,user:null,credits:0,loading:false};const configured=!!session.configured,signed=!!session.user;
 const display=signed?esc(session.user.displayName||session.user.email||'Signed-in user'):'Not signed in';
 const avatar=signed&&session.user.photoURL?`<img src="${esc(session.user.photoURL)}" referrerpolicy="no-referrer" alt="Profile">`:ico('star',22);
-const authAction=signed?`<button class="outline" onclick="window.FolioAccount.signOut()">Sign out</button>`:`<button class="primary" ${configured?'':'disabled'} onclick="window.FolioAccount.signIn()">Continue with Google</button>`;
+const authAction=signed?`<button class="outline" onclick="window.FolioAccount.signOut()">Sign out</button>`:`<button class="primary" ${configured&&!session.loading?'':'disabled'} onclick="window.FolioAccount.signIn()">${session.loading?'Connecting…':'Continue with Google'}</button>`;
 const checkoutEnabled=configured&&!!window.FOLIO_PAYMENTS_ENABLED;
 const note=configured?'Google sign-in is available once Google is enabled for this Firebase project and the website domain is authorised.':'Google sign-in and payments require Firebase project configuration. Free features work without signing in.';
 E('main').innerHTML=topbar('FOLIO ACCOUNT','Free by default.','Keep the core tools free. Choose a premium credit pack only when you want one.',false)+`
 <div class="account-banner"><div><h3>Folio for everyone</h3><p>Scan pages, create pictures, build Excel files and export PDFs without a subscription.</p></div><div class="badges"><span class="badge">No forced login</span><span class="badge">Local-first</span></div></div>
 <div class="account-person"><div class="account-avatar">${avatar}</div><div style="flex:1;min-width:0"><strong style="font-size:14px;display:block;overflow-wrap:anywhere">${display}</strong><span class="smallmuted">${signed?`${Number(session.credits||0)} verified premium credits`:'Optional Google account'}</span></div>${authAction}</div>
-<p class="privacy-line">${note} Signing in does not upload your scans, pictures, spreadsheets or PDFs. They stay in this browser unless you explicitly export or share them.</p>
+<p class="privacy-line">${note} Signing in does not upload your scans, pictures, spreadsheets or PDFs. They stay in this browser unless you explicitly export or share them. <a href="https://github.com/SHREY2402/FOLIO/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy notice</a>.</p>${session.error?`<p class="privacy-line" style="color:#b44141">${esc(session.error)}</p>`:''}
 <div class="section-head"><h2 class="section-title">Simple pricing</h2><span class="smallmuted">USD · One-time, not a subscription</span></div>
 <div class="price-grid">
 <div class="price-card"><span class="tag">EVERYONE</span><div class="name">Folio Free</div><div class="money">$0</div><p class="micro">Unlimited local scanning and document creation. Local library, file exports, and sharing.</p><button class="outline" onclick="go('scan')">Continue free</button></div>
