@@ -1,0 +1,10 @@
+{
+  "name": "Folio — Scanner & Create Studio",
+  "short_name": "Folio",
+  "description": "Private document scanning, pictures, Excel spreadsheets and PDFs.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5fafb",
+  "theme_color": "#0f9db0"
+}
