@@ -19,8 +19,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: .
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify the public Folio website returns the app, not 404
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="${{ steps.deployment.outputs.page_url }}"
+          echo "Published URL: $url"
+          for attempt in {1..8}; do
+            code=$(curl --location --silent --show-error --output /tmp/folio-check.html --write-out '%{http_code}' --max-time 20 "$url" || true)
+            echo "Public HTTP status attempt $attempt: $code"
+            if [[ "$code" == "200" ]] && grep -qi "Folio" /tmp/folio-check.html; then
+              echo "SUCCESS: Public Folio app is served at $url"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Public site did not return Folio HTML. Deployment success alone is not enough."
+          exit 1
